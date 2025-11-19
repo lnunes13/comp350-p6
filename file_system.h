@@ -17,3 +17,5 @@ void formatDisk();
 void freeFileSystem();
 void printDirectory();
 static void getFileContents(int absoluteBlock, char* filecontents);
+void deleteFile(char *filename);
+void writeToFile(char* filename, char *sourceFile);

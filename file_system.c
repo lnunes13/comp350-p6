@@ -32,18 +32,43 @@ int createFile(char *file, int absoluteSize) {
     return reservedBlock;
 }
 
-// usage: prints file contents given a filename
-void readFile(char* filename) {
-    int i = searchFile(filename);
-    char fileContents[BLOCK_SIZE];
-    if(i == -1) {
+// usage: updates an existing file
+void writeToFile(char* filename, char *sourceFile) {
+    int absoluteBlock = searchFile(filename);
+    
+    if(absoluteBlock == -1) {
         printf("ERROR: file not found!\n");
         return;
     }
-    getFileContents(i, fileContents);   
+    deleteFile(filename);
+    createFile(sourceFile, BLOCK_SIZE);
+}
+
+// usage: deletes file from disk, updates filemap and file table
+void deleteFile(char *filename) {
+    int absoluteBlock = searchFile(filename);
+    if(absoluteBlock == -1) {
+        printf("ERROR: file not found!\n");
+        return;
+    }
+    int relativeBlock = absoluteBlock - NUM_RESERVED_BLOCKS;
+    eraseBlock(relativeBlock);
+    removeFromFileTable(absoluteBlock);
+}
+
+// usage: prints file contents given a filename
+void readFile(char* filename) {
+    int absoluteBlock = searchFile(filename);
+    char fileContents[BLOCK_SIZE];
+    if(absoluteBlock == -1) {
+        printf("ERROR: file not found!\n");
+        return;
+    }
+    getFileContents(absoluteBlock, fileContents);   
     printf("File contents: %s\n", fileContents); 
 }   
 
+// usage: gets the file contents as a null terminated string, writes contents on filecontents
 static void getFileContents(int absoluteBlock, char* filecontents) {
     memcpy(filecontents, disk + (absoluteBlock * BLOCK_SIZE) + FILENAME_SIZE, BLOCK_SIZE - FILENAME_SIZE);
     filecontents[BLOCK_SIZE-FILENAME_SIZE] = '\0';
@@ -161,6 +186,8 @@ void formatDisk() {
 void freeFileSystem() {
     free(disk);
 }
+
+
 
 // usage: lists all contents in the directory
 void printDirectory() {

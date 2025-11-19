@@ -14,7 +14,6 @@
 void getUserInput(char *buffer, int size);
 void clearInputBuffer();
 void formatToFile(char* inputBuffer, char* filebuffer);
-void printFileTest(char *fileBuffer);
 
 int main() {
     char inputBuffer[INPUT_BUFFER_SIZE];
@@ -41,13 +40,17 @@ int main() {
             token = strtok(NULL, " \n");
             readFile(token);
         } else if(strcmp(token, "write") == 0) {
-            
+            char fileBuffer[BLOCK_SIZE];
+            token = strtok(NULL, " \n");
+            formatToFile(inputBuffer, fileBuffer);
+            writeToFile(token, fileBuffer);
         } else if(strcmp(token, "delete") == 0) {
-            
+            token = strtok(NULL, " \n");
+            deleteFile(token);
         } else if(strcmp(token, "dir") == 0) {
             printDirectory();
         } 
-    } while(strcmp(token, "exit") != 0);
+    } while(token == NULL || strcmp(token, "exit") != 0);
 
     freeFileSystem();
 }
@@ -71,10 +74,4 @@ void formatToFile(char* inputBuffer, char* fileBuffer) {
     memcpy(fileBuffer, filename, FILENAME_SIZE);
     memcpy(filedata, datastart, BLOCK_SIZE - FILENAME_SIZE);
     memcpy(fileBuffer + FILENAME_SIZE, filedata, BLOCK_SIZE - FILENAME_SIZE);
-}
-
-void printFileTest(char *fileBuffer) {
-    for(int i = 0; i < BLOCK_SIZE; i++) {
-        printf("%c", fileBuffer[i]);
-    }
 }
