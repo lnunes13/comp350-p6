@@ -38,13 +38,14 @@ void readFile(char* filename) {
     char fileContents[BLOCK_SIZE];
     if(i == -1) {
         printf("ERROR: file not found!\n");
-        getFileContents(i, fileContents);
-    }   
+        return;
+    }
+    getFileContents(i, fileContents);   
     printf("File contents: %s\n", fileContents); 
 }   
 
 static void getFileContents(int absoluteBlock, char* filecontents) {
-    memcpy(filecontents, disk + absoluteBlock*BLOCK_SIZE+FILENAME_SIZE, BLOCK_SIZE-FILENAME_SIZE);
+    memcpy(filecontents, disk + (absoluteBlock * BLOCK_SIZE) + FILENAME_SIZE, BLOCK_SIZE - FILENAME_SIZE);
     filecontents[BLOCK_SIZE-FILENAME_SIZE] = '\0';
 }
 
@@ -53,9 +54,9 @@ static int searchFile(char *filename) {
     char searchName[FILENAME_SIZE+1];
     for(int i = 0; i < NUM_FILE_BLOCKS; i++) {
         if(fileTable[i] != -1) {
-            getFileName(i, searchName);
+            getFileName(fileTable[i], searchName);
             if(strcmp(filename, searchName) == 0) {
-                return i;
+                return i + NUM_RESERVED_BLOCKS;
             }
         }
     }
