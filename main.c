@@ -14,6 +14,7 @@
 void getUserInput(char *buffer, int size);
 void clearInputBuffer();
 void formatToFile(char* inputBuffer, char* filebuffer);
+void printFileTest(char *fileBuffer);
 
 int main() {
     char inputBuffer[INPUT_BUFFER_SIZE];
@@ -33,11 +34,12 @@ int main() {
             formatDisk();
             printf("disk formatted\n");
         } else if(strcmp(token, "create") == 0) {
-            char filebuffer[BLOCK_SIZE];
-            formatToFile(inputBuffer, filebuffer);
-            createFile(filebuffer, BLOCK_SIZE);
+            char fileBuffer[BLOCK_SIZE];
+            formatToFile(inputBuffer, fileBuffer);
+            createFile(fileBuffer, BLOCK_SIZE);
         } else if(strcmp(token, "read") == 0) {
-            
+            token = strtok(NULL, " \n");
+            readFile(token);
         } else if(strcmp(token, "write") == 0) {
             
         } else if(strcmp(token, "delete") == 0) {
@@ -59,7 +61,7 @@ void formatToFile(char* inputBuffer, char* fileBuffer) {
     memcpy(tokenBuffer, inputBuffer, INPUT_BUFFER_SIZE);
     char *token = strtok(tokenBuffer, " \n");
     token = strtok(NULL, " \n");
-    memcpy(filename, token, strlen(token));
+    strcpy(filename, token);
 
     // getfiledata
     token = strtok(NULL, " \n");
@@ -69,4 +71,10 @@ void formatToFile(char* inputBuffer, char* fileBuffer) {
     memcpy(fileBuffer, filename, FILENAME_SIZE);
     memcpy(filedata, datastart, BLOCK_SIZE - FILENAME_SIZE);
     memcpy(fileBuffer + FILENAME_SIZE, filedata, BLOCK_SIZE - FILENAME_SIZE);
+}
+
+void printFileTest(char *fileBuffer) {
+    for(int i = 0; i < BLOCK_SIZE; i++) {
+        printf("%c", fileBuffer[i]);
+    }
 }

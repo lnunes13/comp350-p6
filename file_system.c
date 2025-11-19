@@ -16,7 +16,7 @@
 #define BLOCK_SIZE 512                                              // size of individual blocks in bytes (max file size is technically 480 bytes, since first 32 bytes include the filename)
 
 int fileTable[NUM_FILE_BLOCKS];  // array of memory addresses of the files
-char *disk;        // contiguous memory containing a number of bytes equal to (NUM_BLOCKS * MAX_FILE_SIZE)
+char *disk;                      // contiguous memory containing a number of bytes equal to (NUM_BLOCKS * MAX_FILE_SIZE)
 
 const char BIT_MASKS[] = {1, 2, 4, 8, 16, 32, 64, 128}; // used to facilitate bitwise operations on filemap
 
@@ -35,9 +35,12 @@ int createFile(char *file, int absoluteSize) {
 // usage: prints file contents given a filename
 void readFile(char* filename) {
     int i = searchFile(filename);
-    if(i == -1) 
-        printf("ERROR: file not found!");
-    printf("File contents: \n"); 
+    char fileContents[BLOCK_SIZE];
+    if(i == -1) {
+        printf("ERROR: file not found!\n");
+        getFileContents(i, fileContents);
+    }   
+    printf("File contents: %s\n", fileContents); 
 }   
 
 static void getFileContents(int absoluteBlock, char* filecontents) {
@@ -62,7 +65,7 @@ static int searchFile(char *filename) {
 // usage: writes file into a block where 'file' is a pointer the file (including its name in the first 32 bytes)
 static void writeFileToDisk(int absoluteBlock, char *file, int size) {
     for(int i = 0; i < size; i++)
-        disk[absoluteBlock * NUM_BLOCKS + i] = file[i];
+        disk[absoluteBlock * BLOCK_SIZE + i] = file[i];
     bitmapReserveBlock(absoluteBlock);
 }
 
